@@ -88,13 +88,13 @@ npm run dev
 ## Demo Screenshots
 
 ### 1. Backend Health
-![Health Check](images/img1.png)
+![Backend Health Check](images/img1.jpeg)
 
-### 2. Run Triggered
-![Run Trigger](images/img2.png)
+### 2. ClickHouse Data
+![Backend Health Check](images/img2.jpeg)
 
-### 3. ClickHouse Data
-![ClickHouse Query](images/img3.png)
+### 3. ClickHouse tables
+![Backend Health Check](images/img3.jpeg)
 
-### 4. Status with Findings
-![Status](images/img4.png)
+### 4. End-to-End
+![Backend Health Check](images/img4.jpeg)
