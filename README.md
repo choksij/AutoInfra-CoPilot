@@ -84,3 +84,17 @@ cd frontend
 npm install
 npm run dev
 ```
+
+## Demo Screenshots
+
+### 1. Backend Health
+![Health Check](images/img1.png)
+
+### 2. Run Triggered
+![Run Trigger](images/img2.png)
+
+### 3. ClickHouse Data
+![ClickHouse Query](images/img3.png)
+
+### 4. Status with Findings
+![Status](images/img4.png)
