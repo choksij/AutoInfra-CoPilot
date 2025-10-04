@@ -1,0 +1,42 @@
+[
+  {
+    "tool": "policy",
+    "rule_id": "POLICY_001",
+    "severity": "CRITICAL",
+    "file": "main.tf",
+    "line": 20,
+    "message": "Security Group allows 0.0.0.0/0 on a sensitive port (22/3389/80/443).  [context lines 16-24]\n  ingress {\n    from_port   = 22\n    to_port     = 22\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }"
+  },
+  {
+    "tool": "policy",
+    "rule_id": "POLICY_002",
+    "severity": "HIGH",
+    "file": "main.tf",
+    "line": 6,
+    "message": "S3 bucket has public ACL (acl=\"public-read\" or similar).  [context lines 3-9]\nresource \"aws_s3_bucket\" \"logs\" {\n  bucket = \"copilot-demo-logs\"\n  acl    = \"public-read\"\n}"
+  },
+  {
+    "tool": "policy",
+    "rule_id": "POLICY_002",
+    "severity": "HIGH",
+    "file": "main.tf",
+    "line": 3,
+    "message": "S3 bucket missing `block_public_acls = true`."
+  },
+  {
+    "tool": "policy",
+    "rule_id": "POLICY_002",
+    "severity": "HIGH",
+    "file": "main.tf",
+    "line": 3,
+    "message": "S3 bucket missing `versioning { enabled = true }`."
+  },
+  {
+    "tool": "policy",
+    "rule_id": "POLICY_003",
+    "severity": "HIGH",
+    "file": "main.tf",
+    "line": 41,
+    "message": "RDS instance has `publicly_accessible = true`.  [context lines 37-44]\nresource \"aws_db_instance\" \"db\" {\n  ...\n  publicly_accessible  = true\n}"
+  }
+]
