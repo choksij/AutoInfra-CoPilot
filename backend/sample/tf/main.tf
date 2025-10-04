@@ -1,8 +1,3 @@
-############################################
-# Intentionally "bad" Terraform for demo  #
-############################################
-
-# --- S3: public ACL + missing protections (BAD) ---
 resource "aws_s3_bucket" "logs" {
   bucket = "copilot-demo-logs"
   acl    = "public-read"         # public ACL
@@ -12,7 +7,6 @@ resource "aws_s3_bucket" "logs" {
   # versioning { enabled = true }
 }
 
-# --- Security Group: 0.0.0.0/0 on port 22 (BAD) ---
 resource "aws_security_group" "ssh_all" {
   name        = "ssh-open"
   description = "allows ssh from anywhere"
@@ -32,7 +26,6 @@ resource "aws_security_group" "ssh_all" {
   }
 }
 
-# --- RDS: publicly accessible (BAD) ---
 resource "aws_db_instance" "db" {
   identifier           = "copilot-db"
   engine               = "postgres"

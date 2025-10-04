@@ -45,11 +45,8 @@ def kickoff_run(req: RunRequest) -> StatusResponse:
                 safe_to_merge=status_doc.safe_to_merge,
             )
 
-        # If you want to store the composed markdown (patch library), you can:
-        # st.insert_patch(status_doc.run_id, status_doc.llm_comment_markdown, accepted=None)
 
     except Exception:
-        # Don’t fail the API if storage is unavailable
         pass
 
     return status_doc

@@ -9,11 +9,7 @@ from ..config.settings import get_settings
 
 
 class GitHubClient:
-    """
-    Minimal GitHub client using a Personal Access Token (PAT).
-    - Supports: post PR comment (regular review comment on the PR's issue thread)
-    - Optional: create a review with comments, open a fix branch/PR (not used in MVP)
-    """
+    
 
     def __init__(self, token: Optional[str] = None) -> None:
         s = get_settings()
@@ -34,10 +30,7 @@ class GitHubClient:
         pr_number: int,
         markdown_body: str,
     ) -> bool:
-        """
-        Posts a single consolidated PR comment to the issue thread (common pattern for bots).
-        Returns True on success, False on failure or if disabled.
-        """
+        
         if not self.enabled:
             return False
 
@@ -57,9 +50,7 @@ class GitHubClient:
         body: str,
         event: str = "COMMENT",
     ) -> bool:
-        """
-        Optional: create a PR review (less necessary for MVP).
-        """
+        
         if not self.enabled:
             return False
 

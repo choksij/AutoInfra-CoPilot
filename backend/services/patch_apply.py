@@ -18,9 +18,7 @@ DIFF_FENCE_RE = re.compile(r"```diff\s+(?P<body>.+?)```", re.DOTALL)
 
 
 def extract_first_diff(markdown: str) -> Optional[str]:
-    """
-    Returns the first fenced ```diff block (including fences), or None if missing.
-    """
+    
     m = DIFF_FENCE_RE.search(markdown or "")
     if not m:
         return None
@@ -28,9 +26,7 @@ def extract_first_diff(markdown: str) -> Optional[str]:
 
 
 def extract_all_diffs(markdown: str) -> List[str]:
-    """
-    Returns all fenced ```diff blocks (including fences) found in the markdown.
-    """
+    
     return ["```diff\n" + m.strip("\n") + "\n```" for m in DIFF_FENCE_RE.findall(markdown or "")]
 
 
@@ -49,12 +45,7 @@ def _write_text(path: Path, text: str) -> None:
 
 
 def _apply_unified_diff(root: Path, patch_text: str) -> Tuple[bool, str]:
-    """
-    Very lightweight unified diff applier for fenced ```diff blocks.
-    - Ignores whitespace when matching minus lines
-    - Supports simple +/- line changes within one file at a time
-    Returns (ok, message).
-    """
+    
     try:
         start = patch_text.find("```diff")
         if start == -1:
@@ -119,9 +110,7 @@ def _apply_unified_diff(root: Path, patch_text: str) -> Tuple[bool, str]:
 
 
 def self_check_with_patch(sample_tf_dir: str, patch_markdown: str) -> SelfCheckResult:
-    """
-    Applies a single fenced diff in a temp copy of the TF dir, then re-runs checks.
-    """
+    
     src = Path(sample_tf_dir).resolve()
     with tempfile.TemporaryDirectory() as tmpdir:
         dst = Path(tmpdir) / "tf"
@@ -158,9 +147,7 @@ def self_check_with_patch(sample_tf_dir: str, patch_markdown: str) -> SelfCheckR
 
 
 def self_check_with_patches(sample_tf_dir: str, patch_markdowns: List[str]) -> SelfCheckResult:
-    """
-    Applies multiple fenced diff patches in a single temp copy, then re-runs checks once.
-    """
+    
     src = Path(sample_tf_dir).resolve()
     with tempfile.TemporaryDirectory() as tmpdir:
         dst = Path(tmpdir) / "tf"

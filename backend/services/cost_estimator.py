@@ -33,10 +33,7 @@ def _scan_tf_for_resources(base_dir: str) -> Counter:
 
 
 def estimate_monthly_cost(base_dir: str) -> float:
-    """
-    Mock-but-credible cost estimate:
-      counts resource types and multiplies by COST_TABLE values.
-    """
+    
     counts = _scan_tf_for_resources(base_dir)
     total = 0.0
     for rtype, n in counts.items():

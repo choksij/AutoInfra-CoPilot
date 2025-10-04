@@ -7,7 +7,7 @@ from typing import List
 from ..models import Finding
 
 
-# Simple regex-based rules for speed and demo clarity
+
 CIDR_OPEN_RE = re.compile(r'0\.0\.0\.0/0')
 PORT_RE = re.compile(r'(\bfrom_port\b|\bto_port\b)\s*=\s*(\d+)')
 S3_ACL_PUBLIC_RE = re.compile(r'acl\s*=\s*"(public-read|public-read-write)"')
@@ -27,12 +27,12 @@ def _scan_file(path: Path) -> List[Finding]:
 
     findings: List[Finding] = []
 
-    # POLICY_001: No 0.0.0.0/0 on sensitive ports in security groups
+    
     if CIDR_OPEN_RE.search(text):
-        # try to locate an offending port near the open CIDR
+    
         ports = set(m.group(2) for m in PORT_RE.finditer(text))
         if ports & SENSITIVE_PORTS:
-            # best-effort line number for the CIDR occurrence
+    
             line = text[: text.find("0.0.0.0/0")].count("\n") + 1
             findings.append(
                 Finding(
@@ -45,7 +45,7 @@ def _scan_file(path: Path) -> List[Finding]:
                 )
             )
 
-    # POLICY_002: S3 buckets must not be public and must enable versioning + block_public_acls
+    
     if S3_ACL_PUBLIC_RE.search(text):
         line = text[: S3_ACL_PUBLIC_RE.search(text).start()].count("\n") + 1
         findings.append(

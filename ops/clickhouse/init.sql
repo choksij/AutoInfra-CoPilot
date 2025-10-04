@@ -1,13 +1,8 @@
--- Create DB (idempotent)
+
 CREATE DATABASE IF NOT EXISTS autoinfra;
 
--- Use DB
 USE autoinfra;
 
-----------------------------------------------------------------------
--- Table: runs
--- One row per run (the high-level summary).
-----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS runs
 (
     run_id           String,
@@ -24,10 +19,6 @@ ORDER BY (created_at, run_id)
 TTL created_at + INTERVAL 30 DAY
 SETTINGS index_granularity = 8192;
 
-----------------------------------------------------------------------
--- Table: findings
--- All findings emitted for a run (policy + checkov).
-----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS findings
 (
     run_id     String,
@@ -44,10 +35,6 @@ ENGINE = MergeTree
 ORDER BY (run_id, idx)
 TTL created_at + INTERVAL 30 DAY;
 
-----------------------------------------------------------------------
--- Table: outcomes
--- Self-check deltas produced after applying patches in a temp copy.
-----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS outcomes
 (
     run_id         String,
@@ -62,10 +49,6 @@ ENGINE = MergeTree
 ORDER BY (created_at, run_id)
 TTL created_at + INTERVAL 30 DAY;
 
-----------------------------------------------------------------------
--- Table: patch_library
--- Store suggested patches (diff markdown) and whether they were accepted.
-----------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS patch_library
 (
     run_id        String,
@@ -77,9 +60,6 @@ ENGINE = MergeTree
 ORDER BY (created_at, run_id)
 TTL created_at + INTERVAL 30 DAY;
 
-----------------------------------------------------------------------
--- Convenience view: recent_runs (sorted newest first).
-----------------------------------------------------------------------
 CREATE VIEW IF NOT EXISTS recent_runs AS
 SELECT
     run_id,
@@ -92,7 +72,3 @@ SELECT
     created_at
 FROM runs
 ORDER BY created_at DESC;
-
--- (Optional) simple role/grants if you later add a non-default user:
--- CREATE USER IF NOT EXISTS autoinfra_user IDENTIFIED WITH no_password;
--- GRANT SELECT, INSERT ON autoinfra.* TO autoinfra_user;

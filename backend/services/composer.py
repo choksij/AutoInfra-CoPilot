@@ -3,7 +3,7 @@ from typing import Any, Iterable, List, Tuple
 
 
 def _norm_findings(findings: Iterable[Any]) -> List[dict]:
-    """Accept dicts or pydantic models and return plain dicts."""
+    
     out: List[dict] = []
     for f in findings:
         if hasattr(f, "model_dump"):
@@ -25,10 +25,7 @@ def _norm_findings(findings: Iterable[Any]) -> List[dict]:
 
 
 def _choose_example_diffs(fs: List[dict]) -> List[Tuple[str, str]]:
-    """
-    Return up to 3 example diffs (title, fenced diff) based on common rules present.
-    This is deterministic for the demo; the LLM can replace this later.
-    """
+    
     diffs: List[Tuple[str, str]] = []
 
     # RDS publicly_accessible
@@ -63,10 +60,7 @@ def compose_comment(
     pr_number: int,
     commit_sha: str,
 ) -> str:
-    """
-    Deterministic markdown composer (no LLM). Keeps the same signature we’ll use for the LLM later.
-    Produces: header, counts by severity, top issues, and up to 3 example fenced diff patches.
-    """
+    
     fs = _norm_findings(findings)
 
     # Counts

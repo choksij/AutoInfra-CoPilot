@@ -37,20 +37,12 @@ def _prepend_badge(md: str, safe: Optional[bool]) -> str:
 
 
 def execute_run(req: RunRequest) -> StatusResponse:
-    """
-    Full pipeline (Checkpoint E):
-      - Checkov + policy + context
-      - Cost estimate
-      - Composer -> markdown with suggested diff(s)
-      - Self-check on ALL suggested diffs -> badge + safe_to_merge flag
-      - Emit metrics (result:safe|unsafe|success)
-    """
     settings = get_settings()
     start = time.perf_counter()
 
     tf_path = req.tf_path or settings.sample_tf_path
 
-    # ---- Scanners / Rules ----------------------------------------------------
+    
     checkov_findings = run_checkov(tf_path)
     policy_findings = run_policy_checks(tf_path)
     findings: List[Finding] = checkov_findings + policy_findings
@@ -58,10 +50,10 @@ def execute_run(req: RunRequest) -> StatusResponse:
     # Enrich with small code context (helps human/LLM later)
     findings = attach_code_context(findings, base_dir=tf_path, context_radius=3)
 
-    # ---- Cost Estimate -------------------------------------------------------
+    
     cost = estimate_monthly_cost(tf_path)
 
-    # ---- Composer -> markdown ------------------------------------------------
+    
     comment_md = compose_comment(
         findings=findings,
         cost_estimate=cost,
@@ -70,7 +62,7 @@ def execute_run(req: RunRequest) -> StatusResponse:
         commit_sha=req.commit_sha,
     )
 
-    # ---- Self-check on ALL diffs (if any) -----------------------------------
+
     diff_blocks = extract_all_diffs(comment_md or "")
     safe_to_merge: Optional[bool] = None
     self_check_payload = None
@@ -105,7 +97,7 @@ def execute_run(req: RunRequest) -> StatusResponse:
         self_check=self_check_payload,
     )
 
-    # ---- Metrics (safe no-op if not configured) ------------------------------
+
     try:
         get_metrics().send_run_metrics(status_doc.summary, repo=req.repo, result=result_tag)
     except Exception:

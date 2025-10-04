@@ -17,10 +17,7 @@ def _rel_file(base_dir: str, file_path: str) -> str:
 
 
 def run_checkov(base_dir: str) -> List[Finding]:
-    """
-    Executes Checkov over `base_dir` and normalizes failed checks to Finding objects.
-    Requires the `checkov` CLI in PATH.
-    """
+    
     cmd = ["checkov", "-d", base_dir, "-o", "json"]
     try:
         proc = subprocess.run(
@@ -31,11 +28,11 @@ def run_checkov(base_dir: str) -> List[Finding]:
             cwd=base_dir if os.path.isdir(base_dir) else None,
         )
     except FileNotFoundError:
-        # Checkov not installed; return empty list (pipeline remains resilient)
+        
         return []
 
     if proc.returncode not in (0, 2):  # 0 OK, 2 findings
-        # Non-standard failure; best-effort parse stderr for context
+        
         return []
 
     try:
@@ -65,7 +62,7 @@ def run_checkov(base_dir: str) -> List[Finding]:
             Finding(
                 tool="checkov",
                 rule_id=str(rule_id),
-                severity=severity,  # type: ignore[arg-type]
+                severity=severity,  
                 file=_rel_file(base_dir, file_path or "unknown"),
                 line=line,
                 message=str(message),

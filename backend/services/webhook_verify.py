@@ -8,10 +8,6 @@ from ..config.settings import get_settings
 
 
 def verify_github_signature(body: bytes, signature_header: Optional[str]) -> bool:
-    """
-    Verify GitHub webhook signature (X-Hub-Signature-256).
-    Returns True if valid or if no secret configured (dev-mode), False otherwise.
-    """
     s = get_settings()
     secret = (s.github_webhook_secret or "").encode("utf-8")
 

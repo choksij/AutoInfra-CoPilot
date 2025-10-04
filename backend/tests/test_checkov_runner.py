@@ -26,12 +26,9 @@ def test_run_checkov_detects_issue():
         )
 
         findings = run_checkov(tmp)
-        # We don't assert exact rule IDs because Checkov rules can change;
-        # just ensure at least one finding is present.
         assert isinstance(findings, list)
         assert len(findings) >= 0  # Should run without exceptions
 
-        # If any findings exist, ensure their shape is correct
         if findings:
             f = findings[0]
             assert hasattr(f, "tool") and f.tool == "checkov"

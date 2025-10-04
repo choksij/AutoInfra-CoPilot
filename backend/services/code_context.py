@@ -15,10 +15,7 @@ def _read_file_lines(root: Path, rel_path: str) -> List[str]:
 
 
 def attach_code_context(findings: List[Finding], base_dir: str, context_radius: int = 3) -> List[Finding]:
-    """
-    Adds a short code context snippet around each finding (as message suffix),
-    which is useful for debugging and later for LLM patch generation.
-    """
+
     root = Path(base_dir)
     cache: Dict[str, List[str]] = {}
 

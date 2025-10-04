@@ -4,22 +4,18 @@ import time
 from typing import Dict, List, Optional
 
 try:
-    # The official Datadog client (HTTP API)
+    
     from datadog import initialize, api  # type: ignore
-except Exception:  # pragma: no cover
-    initialize = None  # type: ignore
-    api = None  # type: ignore
+except Exception:  
+    initialize = None 
+    api = None  
 
 from ..config.settings import get_settings
 from ..models import RunSummary
 
 
 class Metrics:
-    """
-    Minimal Datadog metrics helper.
-    - If DD_API_KEY or library is missing -> becomes a no-op (safe fallback).
-    - Uses HTTP API (api.Metric.send) so you don't need the local agent.
-    """
+    
 
     def __init__(self) -> None:
         self.enabled = False
@@ -31,7 +27,6 @@ class Metrics:
             self.enabled = False
             return
 
-        # Map 'us5.datadoghq.com' -> 'https://api.us5.datadoghq.com'
         site = (settings.dd_site or "datadoghq.com").strip()
         if site.startswith("http"):
             api_host = site
@@ -52,10 +47,7 @@ class Metrics:
         result: str = "success",
         extra_tags: Optional[List[str]] = None,
     ) -> None:
-        """
-        Sends a small batch of metrics describing a run.
-        Uses Datadog HTTP API (Metric.send). Safe to call even if disabled.
-        """
+        
         if not self.enabled:
             return
 
@@ -77,7 +69,7 @@ class Metrics:
             ]
             api.Metric.send(payload)
         except Exception:
-            # Fail silently; metrics should never break the run
+        
             return
 
 

@@ -49,9 +49,6 @@ class Storage(Protocol):
     def get_status(self, run_id: str) -> Dict[str, Any]: ...
 
 
-# -------------------------
-# In-memory fallback store
-# -------------------------
 class MemoryStorage:
     def __init__(self) -> None:
         # primary rows
@@ -185,9 +182,6 @@ class MemoryStorage:
             d["self_check"] = self_check
 
 
-# -------------------------
-# ClickHouse HTTP storage
-# -------------------------
 class ClickHouseStorage:
     """
     Minimal HTTP-based ClickHouse client for our schema.
@@ -371,9 +365,6 @@ def _q(s: str) -> str:
     return f"'{esc}'"
 
 
-# -------------------------
-# Storage factory (singleton)
-# -------------------------
 _STORAGE_SINGLETON: Optional[Storage] = None
 
 def get_storage() -> Storage:
