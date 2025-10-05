@@ -1,26 +1,31 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
-    "./app/**/*.{ts,tsx}",
-    "./components/**/*.{ts,tsx}",
-    "./lib/**/*.{ts,tsx}"
+    "./app/**/*.{ts,tsx,js,jsx}",
+    "./components/**/*.{ts,tsx,js,jsx}",
+    "./lib/**/*.{ts,tsx,js,jsx}",
   ],
   theme: {
     extend: {
       colors: {
-        ink: {
-          900: "#0B1020",
-          800: "#151B2B",
-          700: "#1E2435"
-        }
+        // tokens used in globals.css
+        background: "var(--bg)",
+        foreground: "var(--fg)",
+        panel: "var(--panel)",
+        muted: "var(--muted)",
+        critical: "#ef4444",
+        high: "#f59e0b",
+        medium: "#3b82f6",
+        low: "#10b981",
       },
       boxShadow: {
-        soft: "0 6px 24px rgba(0,0,0,0.08)"
+        // 👇 this makes `shadow-soft` valid
+        soft: "0 10px 30px -12px rgba(0, 0, 0, 0.25)",
       },
       borderRadius: {
-        xl2: "1rem"
-      }
-    }
+        "2xl": "1rem",
+      },
+    },
   },
-  plugins: []
+  plugins: [],
 };

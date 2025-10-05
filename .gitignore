@@ -47,3 +47,7 @@ dd-agent-data/
 
 # OS / Misc
 Thumbs.db
+
+frontend/.next
+frontend/node_modules
+

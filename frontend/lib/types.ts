@@ -1,5 +1,4 @@
 // lib/types.ts
-
 export type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
 export interface Finding {
@@ -9,40 +8,31 @@ export interface Finding {
   file: string;
   line: number;
   message: string;
-  // Optional: some backends include an inline context block
+  // optional
   context?: string;
 }
 
-export interface RunSummary {
+export interface StatusSummary {
   checkov_issues: number;
   policy_fails: number;
   cost_usd_month: number;
   duration_ms: number;
 }
 
-export interface SelfCheck {
-  issues_before: number;
-  issues_after: number;
-  policy_before: number;
-  policy_after: number;
-}
-
 export interface StatusResponse {
   run_id: string;
   status: "running" | "completed" | "failed";
-  summary: RunSummary;
+  summary: StatusSummary;
   findings: Finding[];
-  llm_comment_markdown?: string | null;
+  llm_comment_markdown?: string;
   safe_to_merge?: boolean | null;
-  self_check?: SelfCheck | null;
-  created_at?: string; // ISO timestamp
-}
-
-export interface RunRequestBody {
-  repo: string;
-  pr_number: number;
-  commit_sha: string;
-  tf_path?: string;
+  self_check?: {
+    issues_before: number;
+    issues_after: number;
+    policy_before: number;
+    policy_after: number;
+  } | null;
+  created_at?: string;
 }
 
 export interface HistoryItem {
@@ -52,5 +42,12 @@ export interface HistoryItem {
   fails: number;
   cost: number;
   duration_ms: number;
-  created_at: string; // ISO
+  created_at: string;
+}
+
+export interface RunKickoff {
+  repo: string;
+  pr_number: number;
+  commit_sha: string;
+  tf_path?: string;
 }

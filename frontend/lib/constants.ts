@@ -1,22 +1,15 @@
 // lib/constants.ts
+export const API_TIMEOUT_MS = 25_000;
 
-import type { Severity } from "./types";
+// Polling
+export const POLL_MS = 1_200; // 1.2s
+export const POLL_MAX_MS = 30_000; // 30s cap
 
-export const POLL_MS_RUNNING = 1_000; // how often to poll while run is "running"
-export const POLL_MS_IDLE = 10_000;   // background refresh when nothing is running
-export const POLL_TIMEOUT_MS = 2 * 60 * 1_000; // 2 minutes safety cap
-
-export const SEVERITY_ORDER: Severity[] = ["CRITICAL", "HIGH", "MEDIUM", "LOW"];
-
-export const SEVERITY_COLORS: Record<Severity, string> = {
-  CRITICAL: "bg-red-600 text-white",
-  HIGH: "bg-orange-500 text-white",
-  MEDIUM: "bg-amber-400 text-black",
-  LOW: "bg-emerald-400 text-black",
-};
-
-export const BADGE_COPY = {
-  unknown: "🟡 Auto-check: not run",
-  safe: "🟢 Auto-check: safe to merge",
-  unsafe: "🔴 Auto-check: needs changes",
+// Severity colors (Tailwind classes)
+export const SEVERITY_COLORS: Record<string, string> = {
+  CRITICAL: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
+  HIGH: "bg-orange-500/15 text-orange-300 ring-orange-500/30",
+  MEDIUM: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
+  LOW: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
+  INFO: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
 };

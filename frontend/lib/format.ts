@@ -1,38 +1,43 @@
 // lib/format.ts
+import { SEVERITY_COLORS } from "./constants";
 
-import type { Severity } from "./types";
-
-export function formatMoneyUSD(n: number | string, opts: { maximumFractionDigits?: number } = {}) {
-  const num = typeof n === "string" ? Number(n) : n;
-  return new Intl.NumberFormat(undefined, {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: opts.maximumFractionDigits ?? 2,
-  }).format(Number.isFinite(num) ? (num as number) : 0);
+export function formatMoney(n: number | undefined | null) {
+  const v = Number(n ?? 0);
+  return `$${v.toFixed(2)}/mo`;
 }
 
-export function formatDurationMs(ms: number | string) {
-  const v = typeof ms === "string" ? Number(ms) : ms;
-  if (!Number.isFinite(v)) return "-";
-  if (v < 1000) return `${Math.round(v)} ms`;
-  const s = v / 1000;
-  if (s < 60) return `${s.toFixed(1)} s`;
-  const m = Math.floor(s / 60);
-  const rs = Math.round(s % 60);
-  return `${m}m ${rs}s`;
+export function formatDuration(ms: number | undefined | null) {
+  const v = Number(ms ?? 0);
+  if (v < 1000) return `${v} ms`;
+  return `${(v / 1000).toFixed(1)} s`;
 }
 
-export function formatDateTimeISO(iso: string) {
+export function formatDate(iso?: string) {
+  if (!iso) return "";
   const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;
-  return new Intl.DateTimeFormat(undefined, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(d);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleString();
 }
 
-export function severityLabel(s: Severity | string): Severity | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" {
-  const u = String(s || "MEDIUM").toUpperCase();
-  if (u === "CRITICAL" || u === "HIGH" || u === "MEDIUM" || u === "LOW") return u;
-  return "MEDIUM";
+export function severityPillClass(sev: string) {
+  return `px-2 py-0.5 rounded-md text-[11px] font-medium ${SEVERITY_COLORS[sev] ?? "bg-white/10 text-white/70"}`;
+}
+
+/** Extracts the first line (badge line) from llm_comment_markdown. */
+export function firstLine(md?: string) {
+  if (!md) return "";
+  const idx = md.indexOf("\n");
+  return idx === -1 ? md.trim() : md.slice(0, idx).trim();
+}
+
+/** Extract fenced ```diff … ``` blocks from markdown. */
+export function extractDiffBlocks(md?: string): string[] {
+  if (!md) return [];
+  const re = /```diff\s+([\s\S]*?)```/g;
+  const blocks: string[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(md)) !== null) {
+    blocks.push("```diff\n" + m[1].trim() + "\n```");
+  }
+  return blocks;
 }

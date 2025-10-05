@@ -1,0 +1,97 @@
+/* styles/prose.css */
+
+/* Base prose container */
+.prose {
+  max-width: 100%;
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+/* Headings */
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-weight: 600;
+  color: var(--foreground);
+  margin-top: 1.25em;
+  margin-bottom: 0.75em;
+}
+
+/* Paragraphs and lists */
+.prose p {
+  margin-top: 0.75em;
+  margin-bottom: 0.75em;
+}
+
+.prose ul,
+.prose ol {
+  margin-left: 1.5em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose li {
+  margin: 0.25em 0;
+}
+
+/* Code blocks */
+.prose pre {
+  background-color: #1e1e2f;
+  color: #f8f8f2;
+  font-size: 0.875rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.prose code {
+  background-color: rgba(240, 246, 252, 0.05);
+  padding: 0.2em 0.4em;
+  border-radius: 0.3rem;
+  font-size: 0.875em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Diff-specific styling */
+.prose pre code.diff {
+  display: block;
+  white-space: pre;
+}
+
+.prose pre code.diff .inserted {
+  color: #22c55e; /* green */
+}
+
+.prose pre code.diff .deleted {
+  color: #ef4444; /* red */
+}
+
+.prose pre code.diff .context {
+  color: #9ca3af; /* gray */
+}
+
+/* Blockquotes */
+.prose blockquote {
+  border-left: 4px solid var(--muted);
+  padding-left: 1em;
+  color: var(--muted);
+  font-style: italic;
+  margin: 1em 0;
+}
+
+/* Tables */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.9rem;
+}
+
+.prose th,
+.prose td {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}

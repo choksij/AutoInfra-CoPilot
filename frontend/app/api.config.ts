@@ -1,59 +1,35 @@
 // app/api.config.ts
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || "http://127.0.0.1:8000";
 
-import type { HistoryItem, RunRequestBody, StatusResponse } from "@/lib/types";
-
-const BASE =
-  (typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_API_BASE as string) || ""
-    : process.env.NEXT_PUBLIC_API_BASE) || "http://127.0.0.1:8000";
-
-function url(path: string) {
-  return `${BASE.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
-}
-
-async function json<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
-  const res = await fetch(input, {
-    ...init,
-    headers: {
-      "Content-Type": "application/json",
-      ...(init?.headers || {}),
-    },
-  });
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(`${res.status} ${res.statusText} ${text}`.trim());
-  }
-  return res.json() as Promise<T>;
-}
-
-/** Kick off a run; returns the run_id immediately. */
-export async function apiRun(body: RunRequestBody): Promise<{ run_id: string; status: string }> {
-  return json(url("/run"), {
+export async function postRun(body: {
+  repo: string;
+  pr_number: number;
+  commit_sha: string;
+  tf_path?: string;
+}) {
+  const resp = await fetch(`${API_BASE}/run`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
+    cache: "no-store",
   });
+  if (!resp.ok) throw new Error(`POST /run failed: ${resp.status}`);
+  return (await resp.json()) as { run_id: string; status: string };
 }
 
-/** Get status for a given run_id. */
-export async function apiStatus(run_id: string): Promise<StatusResponse> {
-  const u = new URL(url("/status"));
-  u.searchParams.set("run_id", run_id);
-  return json<StatusResponse>(u.toString());
+export async function getStatus(params: { run_id: string }) {
+  const url = new URL(`${API_BASE}/status`);
+  url.searchParams.set("run_id", params.run_id);
+  const resp = await fetch(url.toString(), { cache: "no-store" });
+  if (!resp.ok) throw new Error(`GET /status failed: ${resp.status}`);
+  return (await resp.json()) as import("../lib/types").StatusResponse;
 }
 
-/** Get recent history items (defaults to 20). */
-export async function apiHistory(limit = 20): Promise<HistoryItem[]> {
-  const u = new URL(url("/history"));
-  u.searchParams.set("limit", String(limit));
-  return json<HistoryItem[]>(u.toString());
+export async function getHistory(limit = 10) {
+  const url = new URL(`${API_BASE}/history`);
+  url.searchParams.set("limit", String(limit));
+  const resp = await fetch(url.toString(), { cache: "no-store" });
+  if (!resp.ok) throw new Error(`GET /history failed: ${resp.status}`);
+  return (await resp.json()) as import("../lib/types").HistoryItem[];
 }
-
-/** Simple health ping, useful for gating UI. */
-export async function apiHealth(): Promise<{ ok: boolean; env?: string; sync?: boolean }> {
-  // backend health returns a small table; try to parse boolean
-  const res = await fetch(url("/health"));
-  if (!res.ok) return { ok: false };
-  return { ok: true };
-}
-
-export const API_BASE = BASE;
