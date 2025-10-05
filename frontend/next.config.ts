@@ -2,10 +2,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  outputFileTracingRoot: __dirname, // ensure project root
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,                // ← moved out of experimental
+  outputFileTracingRoot: __dirname, // quiet the multi-lockfile workspace warning
 };
 
 export default nextConfig;

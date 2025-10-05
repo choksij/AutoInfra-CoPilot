@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getHistory, getStatus } from "./api.config";
 import type { HistoryItem, StatusResponse } from "../lib/types";
-import { POLL_MS, POLL_TIMEOUT_MS } from "../lib/constants";
+import { POLL_INTERVAL_MS, POLL_TIMEOUT_MS } from "../lib/constants";
 import StatusCard from "../components/StatusCard";
 import RunButton from "../components/RunButton";
 import FindingsTable from "../components/FindingsTable";
@@ -45,7 +45,8 @@ export default function Page() {
     async function poll() {
       if (stopped) return;
       try {
-        const s = await getStatus({ run_id: runId });
+        // runId is guaranteed non-null here due to the guard above
+        const s = await getStatus({ run_id: runId! });
         setStatus(s);
         if (s.status === "completed" || s.status === "failed") {
           setLoading(false);
@@ -66,7 +67,7 @@ export default function Page() {
         setLoading(false);
         return;
       }
-      setTimeout(poll, POLL_MS);
+      setTimeout(poll, POLL_INTERVAL_MS);
     }
 
     poll();

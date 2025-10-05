@@ -1,15 +1,19 @@
 // lib/constants.ts
-export const API_TIMEOUT_MS = 25_000;
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || "http://127.0.0.1:8000";
 
-// Polling
-export const POLL_MS = 1_200; // 1.2s
-export const POLL_MAX_MS = 30_000; // 30s cap
+export const POLL_INTERVAL_MS = 1000;   // how often we re-check /status
+export const POLL_TIMEOUT_MS  = 15000;  // stop polling after 15s
 
-// Severity colors (Tailwind classes)
 export const SEVERITY_COLORS: Record<string, string> = {
-  CRITICAL: "bg-rose-500/15 text-rose-300 ring-rose-500/30",
-  HIGH: "bg-orange-500/15 text-orange-300 ring-orange-500/30",
-  MEDIUM: "bg-amber-500/15 text-amber-300 ring-amber-500/30",
-  LOW: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-  INFO: "bg-sky-500/15 text-sky-300 ring-sky-500/30",
+  CRITICAL: "bg-rose-500/20 text-rose-300 border border-rose-500/40",
+  HIGH:     "bg-amber-500/20 text-amber-300 border border-amber-500/40",
+  MEDIUM:   "bg-sky-500/20 text-sky-300 border border-sky-500/40",
+  LOW:      "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40",
 };
+
+export const BADGE_COLORS = {
+  safe:   "text-emerald-400",
+  unsafe: "text-rose-400",
+  idle:   "text-amber-400",
+} as const;
