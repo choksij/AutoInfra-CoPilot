@@ -1,11 +1,13 @@
 # backend/routes/runs.py
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
 from typing import Dict
+from fastapi import APIRouter, HTTPException
+
 from ..models import RunRequest, StatusResponse
 from ..orchestrator import execute_run
 from ..services.storage import get_storage
+from ..services.metrics import get_metrics
 
 router = APIRouter()
 
@@ -21,7 +23,7 @@ def kickoff_run(req: RunRequest) -> StatusResponse:
     # Cache in-memory for /status
     status_store[status_doc.run_id] = status_doc
 
-    # Persist to storage (CH or Memory) using the new signatures
+    # Persist to storage (CH or Memory)
     try:
         st = get_storage()
         st.insert_run(
@@ -44,8 +46,18 @@ def kickoff_run(req: RunRequest) -> StatusResponse:
                 policy_after=int(sc.get("policy_after", 0)),
                 safe_to_merge=status_doc.safe_to_merge,
             )
+    except Exception:
+        # don't break the run if storage fails
+        pass
 
-
+    # Emit metrics (best-effort)
+    try:
+        result_tag = (
+            "safe" if status_doc.safe_to_merge is True
+            else "unsafe" if status_doc.safe_to_merge is False
+            else "success"
+        )
+        get_metrics().send_run_metrics(status_doc.summary, repo=req.repo, result=result_tag)
     except Exception:
         pass
 

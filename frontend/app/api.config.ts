@@ -1,35 +1,73 @@
 // app/api.config.ts
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || "http://127.0.0.1:8000";
+export const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_API_BASE ||
+  "http://127.0.0.1:8000";
 
-export async function postRun(body: {
+type Json = Record<string, any> | null;
+
+async function request<T = any>(
+  path: string,
+  init?: RequestInit & { expectJson?: boolean }
+): Promise<T> {
+  const url = `${API_BASE}${path}`;
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(init?.headers || {}),
+  };
+
+  const res = await fetch(url, { ...init, headers });
+
+  // Read text first so we can show useful errors if JSON decode fails.
+  const text = await res.text();
+  let data: Json = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch (e: any) {
+      // Invalid JSON from server
+      throw new Error(
+        `Invalid JSON from ${url}: ${e?.message || e}. Body (first 200): ${text.slice(
+          0,
+          200
+        )}`
+      );
+    }
+  }
+
+  if (!res.ok) {
+    const msg =
+      (data && (data.detail || data.message)) || `${res.status} ${res.statusText}`;
+    const err = new Error(`HTTP error from ${url}: ${msg}`);
+    // @ts-ignore
+    err.status = res.status;
+    // @ts-ignore
+    err.body = data ?? text;
+    throw err;
+  }
+
+  return (data as unknown) as T;
+}
+
+// ---- API wrappers ----
+export async function runPipeline(payload: {
   repo: string;
   pr_number: number;
   commit_sha: string;
-  tf_path?: string;
+  tf_path: string;
 }) {
-  const resp = await fetch(`${API_BASE}/run`, {
+  return request<{ run_id: string }>("/run", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-    cache: "no-store",
+    body: JSON.stringify(payload),
   });
-  if (!resp.ok) throw new Error(`POST /run failed: ${resp.status}`);
-  return (await resp.json()) as { run_id: string; status: string };
 }
 
 export async function getStatus(params: { run_id: string }) {
-  const url = new URL(`${API_BASE}/status`);
-  url.searchParams.set("run_id", params.run_id);
-  const resp = await fetch(url.toString(), { cache: "no-store" });
-  if (!resp.ok) throw new Error(`GET /status failed: ${resp.status}`);
-  return (await resp.json()) as import("../lib/types").StatusResponse;
+  const q = new URLSearchParams({ run_id: params.run_id }).toString();
+  return request(`/status?${q}`);
 }
 
 export async function getHistory(limit = 10) {
-  const url = new URL(`${API_BASE}/history`);
-  url.searchParams.set("limit", String(limit));
-  const resp = await fetch(url.toString(), { cache: "no-store" });
-  if (!resp.ok) throw new Error(`GET /history failed: ${resp.status}`);
-  return (await resp.json()) as import("../lib/types").HistoryItem[];
+  const q = new URLSearchParams({ limit: String(limit) }).toString();
+  return request(`/history?${q}`);
 }

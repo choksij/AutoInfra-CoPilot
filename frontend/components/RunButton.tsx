@@ -2,52 +2,47 @@
 "use client";
 
 import { useState } from "react";
-import { postRun } from "../app/api.config";
+import { runPipeline } from "../app/api.config";
 
-export default function RunButton(props: {
+type Props = {
   onKickoff: (runId: string) => void;
-  repo?: string;
-  prNumber?: number;
-  commitSha?: string;
-  tfPath?: string;
-}) {
-  const [loading, setLoading] = useState(false);
+};
 
-  async function click() {
+const DEFAULT_PAYLOAD = {
+  repo: "demo/terraform",
+  pr_number: 2,
+  commit_sha: "cafebabe",
+  tf_path: "backend/sample/tf",
+};
+
+export default function RunButton({ onKickoff }: Props) {
+  const [busy, setBusy] = useState(false);
+
+  const onClick = async () => {
+    if (busy) return;
+    setBusy(true);
     try {
-      setLoading(true);
-      const resp = await postRun({
-        repo: props.repo || "demo/terraform",
-        pr_number: props.prNumber ?? 1,
-        commit_sha: props.commitSha || "deadbeef",
-        tf_path: props.tfPath || "backend/sample/tf",
-      });
-      props.onKickoff(resp.run_id);
-    } catch (e) {
-      console.error(e);
-      alert("Failed to start run (see console).");
+      const res = await runPipeline(DEFAULT_PAYLOAD);
+      if (!res?.run_id) {
+        throw new Error("Response missing run_id");
+      }
+      onKickoff(res.run_id);
+    } catch (e: any) {
+      console.error("Failed to start run:", e);
+      alert(`Failed to start run: ${e?.message || e}`);
     } finally {
-      setLoading(false);
+      setBusy(false);
     }
-  }
+  };
 
   return (
     <button
-      onClick={click}
-      disabled={loading}
-      className="inline-flex items-center gap-2 rounded-xl bg-emerald-500/90 hover:bg-emerald-500 text-black font-semibold px-4 py-2 disabled:opacity-60 disabled:cursor-not-allowed"
+      onClick={onClick}
+      disabled={busy}
+      className="inline-flex items-center rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 px-3 py-2 text-sm font-medium"
+      title="Run sample pipeline"
     >
-      {loading ? (
-        <>
-          <span className="inline-block size-2 rounded-full bg-black animate-pulse" />
-          Running…
-        </>
-      ) : (
-        <>
-          <span className="inline-block size-2 rounded-full bg-black/80" />
-          Run sample pipeline
-        </>
-      )}
+      {busy ? "Running…" : "Run sample pipeline"}
     </button>
   );
 }

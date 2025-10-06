@@ -21,6 +21,11 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  const apiBase =
+    process.env.NEXT_PUBLIC_API_URL ??
+    process.env.NEXT_PUBLIC_API_BASE ??
+    "http://127.0.0.1:8000";
+
   return (
     <html lang="en">
       <body
@@ -36,11 +41,10 @@ export default function RootLayout({
                   AutoInfra CoPilot
                 </h1>
               </div>
+
+              {/* Environment/Debug: show which API URL the app will call */}
               <div className="text-xs text-[var(--muted)]">
-                NEXT_PUBLIC_API_BASE:&nbsp;
-                <code>
-                  {process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8000"}
-                </code>
+                API:&nbsp;<code>{apiBase}</code>
               </div>
             </div>
           </header>

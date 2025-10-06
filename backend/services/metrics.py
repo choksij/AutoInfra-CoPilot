@@ -4,18 +4,17 @@ import time
 from typing import Dict, List, Optional
 
 try:
-    
     from datadog import initialize, api  # type: ignore
-except Exception:  
-    initialize = None 
-    api = None  
+except Exception:
+    initialize = None
+    api = None
 
 from ..config.settings import get_settings
 from ..models import RunSummary
 
 
 class Metrics:
-    
+    """Datadog metrics wrapper (no-op if not configured)."""
 
     def __init__(self) -> None:
         self.enabled = False
@@ -23,20 +22,13 @@ class Metrics:
 
         settings = get_settings()
         if not settings.dd_api_key or initialize is None or api is None:
-            # no-op mode
             self.enabled = False
             return
 
         site = (settings.dd_site or "datadoghq.com").strip()
-        if site.startswith("http"):
-            api_host = site
-        else:
-            api_host = f"https://api.{site}"
+        api_host = site if site.startswith("http") else f"https://api.{site}"
 
-        initialize(
-            api_key=settings.dd_api_key,
-            api_host=api_host,
-        )
+        initialize(api_key=settings.dd_api_key, api_host=api_host)
         self.enabled = True
         self.site_api_host = api_host
 
@@ -47,20 +39,14 @@ class Metrics:
         result: str = "success",
         extra_tags: Optional[List[str]] = None,
     ) -> None:
-        
         if not self.enabled:
             return
-
         try:
             ts = int(time.time())
-            tags = [
-                f"repo:{repo}",
-                f"result:{result}",
-            ]
+            tags = [f"repo:{repo}", f"result:{result}"]
             if extra_tags:
                 tags.extend(extra_tags)
 
-            # Note: Datadog expects values as floats
             payload: List[Dict] = [
                 {"metric": "autoinfra.run.duration_ms", "points": [(ts, float(summary.duration_ms))], "type": "gauge", "tags": tags},
                 {"metric": "autoinfra.checkov.issues", "points": [(ts, float(summary.checkov_issues))], "type": "gauge", "tags": tags},
@@ -69,11 +55,10 @@ class Metrics:
             ]
             api.Metric.send(payload)
         except Exception:
-        
+            # never break the app on metrics
             return
 
 
-# Module-level singleton
 _metrics = Metrics()
 
 

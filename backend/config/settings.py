@@ -18,12 +18,14 @@ class Settings(BaseSettings):
     # Paths
     sample_tf_path: str = Field(default="backend/sample/tf", alias="SAMPLE_TF_PATH")
 
-    # === OpenAI ===
+    # === OpenAI / LLM ===
     openai_api_key: str = Field(default="", alias="OPENAI_API_KEY")
+    llm_model: str = Field(default="gpt-4o-mini", alias="LLM_MODEL")
 
     # === Datadog (optional) ===
     dd_api_key: str = Field(default="", alias="DD_API_KEY")
-    dd_site: str = Field(default="datadoghq.com", alias="DD_SITE")
+    dd_app_key: str = Field(default="", alias="DD_APP_KEY")
+    dd_site: str = Field(default="us5.datadoghq.com", alias="DD_SITE")
 
     # === ClickHouse (optional) ===
     clickhouse_url: Optional[AnyUrl] = Field(default=None, alias="CLICKHOUSE_URL")
