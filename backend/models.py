@@ -38,7 +38,7 @@ class StatusResponse(BaseModel):
     summary: RunSummary
     findings: List[Finding] = []
     llm_comment_markdown: Optional[str] = None
-    # NEW for Checkpoint E
+    
     safe_to_merge: Optional[bool] = None
     self_check: Optional[Dict[str, Any]] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)

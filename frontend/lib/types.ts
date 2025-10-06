@@ -1,4 +1,4 @@
-// lib/types.ts
+
 export type Severity = "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
 
 export interface Finding {

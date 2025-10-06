@@ -28,7 +28,7 @@ def test_webhook_accepts_pr_event_but_may_ignore_action():
         data=json.dumps(payload).encode("utf-8"),
         headers={"X-GitHub-Event": "pull_request"},
     )
-    # If SAMPLE_TF_PATH exists, route returns ok + summary
+    
     assert resp.status_code == 200
     data = resp.json()
     assert data.get("ok") is True

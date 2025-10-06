@@ -1,4 +1,3 @@
-// app/api.config.ts
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_URL ||
   process.env.NEXT_PUBLIC_API_BASE ||
@@ -18,7 +17,7 @@ async function request<T = any>(
 
   const res = await fetch(url, { ...init, headers });
 
-  // Read text first so we can show useful errors if JSON decode fails.
+
   const text = await res.text();
   let data: Json = null;
   if (text) {
@@ -49,7 +48,6 @@ async function request<T = any>(
   return (data as unknown) as T;
 }
 
-// ---- API wrappers ----
 export async function runPipeline(payload: {
   repo: string;
   pr_number: number;

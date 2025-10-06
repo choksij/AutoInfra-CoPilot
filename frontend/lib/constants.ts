@@ -1,9 +1,9 @@
-// lib/constants.ts
+
 export const API_BASE =
   process.env.NEXT_PUBLIC_API_BASE?.replace(/\/+$/, "") || "http://127.0.0.1:8000";
 
-export const POLL_INTERVAL_MS = 1000;   // how often we re-check /status
-export const POLL_TIMEOUT_MS  = 15000;  // stop polling after 15s
+export const POLL_INTERVAL_MS = 1000;   
+export const POLL_TIMEOUT_MS  = 15000;  
 
 export const SEVERITY_COLORS: Record<string, string> = {
   CRITICAL: "bg-rose-500/20 text-rose-300 border border-rose-500/40",

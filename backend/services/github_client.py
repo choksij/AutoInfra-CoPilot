@@ -26,7 +26,7 @@ class GitHubClient:
 
     async def post_pr_comment(
         self,
-        repo_full_name: str,  # "owner/repo"
+        repo_full_name: str,  
         pr_number: int,
         markdown_body: str,
     ) -> bool:

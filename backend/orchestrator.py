@@ -47,7 +47,7 @@ def execute_run(req: RunRequest) -> StatusResponse:
     policy_findings = run_policy_checks(tf_path)
     findings: List[Finding] = checkov_findings + policy_findings
 
-    # Enrich with small code context (helps human/LLM later)
+    
     findings = attach_code_context(findings, base_dir=tf_path, context_radius=3)
 
     
@@ -80,7 +80,7 @@ def execute_run(req: RunRequest) -> StatusResponse:
             }
             result_tag = "safe" if safe_to_merge else "unsafe"
         except Exception:
-            # In case of patch/test error, keep running
+            
             safe_to_merge = None
             result_tag = "success"
 

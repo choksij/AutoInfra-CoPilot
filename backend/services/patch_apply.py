@@ -13,7 +13,7 @@ from .checkov_runner import run_checkov
 from .policy_engine import run_policy_checks
 
 
-# Find all fenced ```diff … ``` blocks
+
 DIFF_FENCE_RE = re.compile(r"```diff\s+(?P<body>.+?)```", re.DOTALL)
 
 
@@ -70,10 +70,10 @@ def _apply_unified_diff(root: Path, patch_text: str) -> Tuple[bool, str]:
         for tf in candidates:
             text_lines = tf.read_text(encoding="utf-8", errors="ignore").splitlines()
 
-            # whitespace-insensitive comparator
+            
             norm = lambda s: "".join(s.split())
 
-            # All minus-lines must be present (ignoring whitespace)
+            
             if minus_lines and not all(any(norm(m) in norm(ln) for ln in text_lines) for m in minus_lines):
                 continue
 
@@ -96,7 +96,7 @@ def _apply_unified_diff(root: Path, patch_text: str) -> Tuple[bool, str]:
                     new_text.append(ln)
                 i += 1
 
-            # If there are extra additions (no matching minus), append them
+            
             if len(plus_lines) > len(minus_lines):
                 extras = plus_lines[len(minus_lines):]
                 new_text.extend(extras)

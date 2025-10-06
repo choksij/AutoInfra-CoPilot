@@ -1,4 +1,4 @@
-// components/FindingsTable.tsx
+
 "use client";
 
 import type { Finding } from "../lib/types";

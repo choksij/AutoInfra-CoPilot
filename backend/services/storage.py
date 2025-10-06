@@ -1,4 +1,4 @@
-# backend/services/storage.py
+
 from __future__ import annotations
 
 import os
@@ -51,12 +51,12 @@ class Storage(Protocol):
 
 class MemoryStorage:
     def __init__(self) -> None:
-        # primary rows
+        
         self._runs: List[Dict[str, Any]] = []
         self._findings: Dict[str, List[Finding]] = {}
         self._outcomes: Dict[str, Dict[str, Any]] = {}
         self._patches: Dict[str, List[Dict[str, Any]]] = {}
-        # optional extras (comment/self_check) if callers decide to cache them
+        
         self._extras: Dict[str, Dict[str, Any]] = {}
 
     def insert_run(
@@ -116,7 +116,7 @@ class MemoryStorage:
 
     def history(self, limit: int = 20) -> List[HistoryItem]:
         items: List[HistoryItem] = []
-        # Order by created_at desc
+        
         for row in sorted(self._runs, key=lambda r: r["created_at"], reverse=True)[:limit]:
             run_id = row["run_id"]
             findings = self._findings.get(run_id, [])
@@ -136,7 +136,7 @@ class MemoryStorage:
         return items
 
     def get_status(self, run_id: str) -> Dict[str, Any]:
-        # find the run row
+        
         run_row = next((r for r in self._runs if r["run_id"] == run_id), None)
         if not run_row:
             raise KeyError("run_id not found")
@@ -173,7 +173,7 @@ class MemoryStorage:
             "created_at": run_row["created_at"].isoformat(),
         }
 
-    # Optional helper if you want to stash the comment/self_check directly
+    
     def set_extras(self, run_id: str, *, llm_comment_markdown: Optional[str] = None, self_check: Optional[Dict[str, Any]] = None) -> None:
         d = self._extras.setdefault(run_id, {})
         if llm_comment_markdown is not None:
@@ -190,37 +190,30 @@ class ClickHouseStorage:
 
     def __init__(self, url: str, user: str = "default", password: str = "") -> None:
         # url examples: http://localhost:8123
-        self.url = str(url).rstrip("/")  # ensure AnyUrl → str
+        self.url = str(url).rstrip("/")  
         self.user = str(user or "")
         self.password = str(password or "")
         self._client = httpx.Client(timeout=10.0)
 
-        # quick health check (non-fatal if fails; caller catches)
+        
         try:
             self._exec("SELECT 1")
         except Exception:
             pass
 
     def _auth(self):
-        # Return httpx basic auth tuple or None
+        
         return (self.user, self.password) if (self.user or self.password) else None
 
     def _exec(self, sql: str) -> str:
-        """
-        Execute SQL and return raw text.
-
-        IMPORTANT: always pass SQL via the 'query' URL param (with database)
-        because some ClickHouse deployments return 404 when body-only is used.
-        """
+        
         params = {"database": DB_NAME, "query": sql}
         resp = self._client.post(f"{self.url}/", params=params, auth=self._auth())
         resp.raise_for_status()
         return resp.text
 
     def _exec_json(self, sql: str) -> Dict[str, Any]:
-        """
-        Execute SQL with FORMAT JSON and parse the JSON result.
-        """
+        
         sql_json = f"{sql} FORMAT JSON"
         params = {"database": DB_NAME, "query": sql_json}
         resp = self._client.post(f"{self.url}/", params=params, auth=self._auth())
@@ -306,7 +299,7 @@ class ClickHouseStorage:
         out: List[HistoryItem] = []
         for r in rows:
             created = str(r["created_at"])
-            # ClickHouse may return 'YYYY-MM-DD HH:MM:SS' or ISO; normalize
+            
             created_iso = created.replace(" ", "T")
             out.append(
                 HistoryItem(
@@ -333,7 +326,7 @@ class ClickHouseStorage:
         row = runs_obj["data"][0]
         created = str(row["created_at"]).replace(" ", "T")
 
-        # findings
+        
         f_obj = self._exec_json(
             f"SELECT tool, rule_id, severity, file, line, message "
             f"FROM autoinfra.findings WHERE run_id = {_q(run_id)}"
@@ -342,7 +335,7 @@ class ClickHouseStorage:
         checkov_issues = sum(1 for f in findings if (f.get("tool") or "").lower() == "checkov")
         policy_fails = sum(1 for f in findings if (f.get("tool") or "").lower() == "policy")
 
-        # outcome (may be missing)
+        
         o_obj = self._exec_json(
             f"SELECT issues_before, issues_after, policy_before, policy_after, safe_to_merge "
             f"FROM autoinfra.outcomes WHERE run_id = {_q(run_id)} LIMIT 1"
@@ -373,7 +366,7 @@ class ClickHouseStorage:
             "status": row["status"],
             "summary": summary,
             "findings": findings,
-            # For now comments aren’t persisted to ClickHouse in this MVP
+            
             "llm_comment_markdown": None,
             "safe_to_merge": safe_to_merge,
             "self_check": self_check,
@@ -391,10 +384,7 @@ _STORAGE_SINGLETON: Optional[Storage] = None
 
 
 def get_storage() -> Storage:
-    """
-    Choose ClickHouse if configured/available; otherwise MemoryStorage.
-    Reads config from pydantic settings first, then env vars.
-    """
+    
     global _STORAGE_SINGLETON
     if _STORAGE_SINGLETON is not None:
         return _STORAGE_SINGLETON
@@ -407,7 +397,7 @@ def get_storage() -> Storage:
         or ""
     ).lower()
 
-    # Coerce AnyUrl → str to avoid attribute errors on rstrip etc.
+    
     raw_url = getattr(settings, "clickhouse_url", None)
     ch_url = (str(raw_url) if raw_url else os.getenv("CLICKHOUSE_URL") or "")
     ch_user = str(getattr(settings, "clickhouse_user", None) or os.getenv("CLICKHOUSE_USER") or "default")

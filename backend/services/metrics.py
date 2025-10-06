@@ -14,7 +14,7 @@ from ..models import RunSummary
 
 
 class Metrics:
-    """Datadog metrics wrapper (no-op if not configured)."""
+    
 
     def __init__(self) -> None:
         self.enabled = False
@@ -55,7 +55,7 @@ class Metrics:
             ]
             api.Metric.send(payload)
         except Exception:
-            # never break the app on metrics
+            
             return
 
 

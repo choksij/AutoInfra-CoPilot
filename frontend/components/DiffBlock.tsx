@@ -1,4 +1,4 @@
-// components/DiffBlock.tsx
+
 "use client";
 
 import { extractDiffBlocks } from "../lib/format";
@@ -25,7 +25,7 @@ function CodeCard({ code }: { code: string }) {
     try {
       await navigator.clipboard.writeText(code);
     } catch {
-      // ignore
+      
     }
   }
   return (

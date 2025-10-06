@@ -9,7 +9,7 @@ from typing import Dict
 RESOURCE_RE = re.compile(r'resource\s+"(?P<type>[a-zA-Z0-9_]+)"\s+"[^"]*"\s*{', re.MULTILINE)
 
 
-# Very rough per-resource monthly placeholder costs (USD)
+
 COST_TABLE: Dict[str, float] = {
     "aws_instance": 35.0,
     "aws_lb": 18.0,

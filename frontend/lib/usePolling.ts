@@ -1,4 +1,4 @@
-// lib/usePolling.ts
+
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -9,10 +9,6 @@ interface Options<T> {
   until?: (value: T | undefined) => boolean;
 }
 
-/**
- * Poll a function that returns a promise of T.
- * Stops when `until` returns true or timeout elapses.
- */
 export function usePolling<T>(fn: () => Promise<T>, opts: Options<T>) {
   const { intervalMs, timeoutMs = 20_000, until } = opts;
   const [data, setData] = useState<T | undefined>(undefined);
@@ -33,7 +29,7 @@ export function usePolling<T>(fn: () => Promise<T>, opts: Options<T>) {
         }
       } catch (e) {
         setError(e);
-        // keep polling unless fatal? for simplicity, stop on error
+        
         stop();
       }
     }
@@ -46,7 +42,7 @@ export function usePolling<T>(fn: () => Promise<T>, opts: Options<T>) {
       setLoading(false);
     }
 
-    // start
+    
     setLoading(true);
     stoppedRef.current = false;
     tick();
@@ -58,7 +54,7 @@ export function usePolling<T>(fn: () => Promise<T>, opts: Options<T>) {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       stoppedRef.current = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, [intervalMs, timeoutMs]);
 
   return { data, loading, error };

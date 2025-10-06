@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "logs" {
   bucket = "copilot-demo-logs"
-  acl    = "public-read"         # public ACL
+  acl    = "public-read"         
 
   # missing:
   # block_public_acls = true
@@ -12,10 +12,10 @@ resource "aws_security_group" "ssh_all" {
   description = "allows ssh from anywhere"
 
   ingress {
-    from_port   = 22              # sensitive port
+    from_port   = 22             
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]  # open to the world
+    cidr_blocks = ["0.0.0.0/0"]  
   }
 
   egress {
@@ -33,5 +33,5 @@ resource "aws_db_instance" "db" {
   allocated_storage    = 20
   username             = "admin"
   password             = "example-pass-123"
-  publicly_accessible  = true     # should be false
+  publicly_accessible  = true     
 }

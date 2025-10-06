@@ -15,7 +15,7 @@ def test_cost_estimator_counts_resources():
             ''',
             encoding="utf-8",
         )
-        # COST_TABLE: instance=35, lb=18, s3=0 → total = 35*2 + 18 = 88
+        
         cost = estimate_monthly_cost(tmp)
         assert isinstance(cost, float)
-        assert cost >= 88.0  # allow >= in case you add more resource types later
+        assert cost >= 88.0  

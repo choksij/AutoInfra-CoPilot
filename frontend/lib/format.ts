@@ -1,4 +1,4 @@
-// lib/format.ts
+
 import { SEVERITY_COLORS } from "./constants";
 
 export function formatMoney(n: number | undefined | null) {
@@ -23,14 +23,14 @@ export function severityPillClass(sev: string) {
   return `px-2 py-0.5 rounded-md text-[11px] font-medium ${SEVERITY_COLORS[sev] ?? "bg-white/10 text-white/70"}`;
 }
 
-/** Extracts the first line (badge line) from llm_comment_markdown. */
+
 export function firstLine(md?: string) {
   if (!md) return "";
   const idx = md.indexOf("\n");
   return idx === -1 ? md.trim() : md.slice(0, idx).trim();
 }
 
-/** Extract fenced ```diff … ``` blocks from markdown. */
+
 export function extractDiffBlocks(md?: string): string[] {
   if (!md) return [];
   const re = /```diff\s+([\s\S]*?)```/g;

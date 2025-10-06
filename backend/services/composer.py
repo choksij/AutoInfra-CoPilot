@@ -28,21 +28,21 @@ def _choose_example_diffs(fs: List[dict]) -> List[Tuple[str, str]]:
     
     diffs: List[Tuple[str, str]] = []
 
-    # RDS publicly_accessible
+    
     if any(f.get("rule_id") == "POLICY_003" or "publicly_accessible = true" in f.get("message", "") for f in fs):
         diffs.append((
             "RDS: disable public access",
             "```diff\n- publicly_accessible = true\n+ publicly_accessible = false\n```"
         ))
 
-    # S3 public ACL / missing protections
+    
     if any(f.get("rule_id") == "POLICY_002" or "public ACL" in f.get("message", "") for f in fs):
         diffs.append((
             "S3: harden bucket",
             "```diff\n- acl = \"public-read\"\n+ acl = \"private\"\n+ block_public_acls = true\n+ versioning { enabled = true }\n```"
         ))
 
-    # SG open SSH
+    
     if any(f.get("rule_id") == "POLICY_001" or "0.0.0.0/0" in f.get("message", "") for f in fs):
         diffs.append((
             "Security Group: restrict SSH",
@@ -63,7 +63,7 @@ def compose_comment(
     
     fs = _norm_findings(findings)
 
-    # Counts
+    
     sev_counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0}
     for f in fs:
         sev = str(f.get("severity", "MEDIUM")).upper()
@@ -73,14 +73,14 @@ def compose_comment(
 
     total = len(fs)
 
-    # Short bullets for top items (first 5)
+    
     bullets_lines: List[str] = []
     for f in fs[:5]:
         first_line = f.get("message", "").splitlines()[0]
         bullets_lines.append(f"- **{f.get('severity','')}** `{f.get('file','')}`:{f.get('line',0)} — {first_line}")
     bullets_text = "\n".join(bullets_lines) if bullets_lines else "_No issues found._"
 
-    # Example diffs (for demo only)
+    
     diffs = _choose_example_diffs(fs)
     diffs_md = "\n\n".join(f"**{title}**\n{block}" for title, block in diffs) if diffs else ""
     suggested_section = "### Suggested patches\n" + diffs_md if diffs_md else ""

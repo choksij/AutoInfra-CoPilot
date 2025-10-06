@@ -32,8 +32,8 @@ def test_policy_engine_flags_expected_rules():
 
         findings = run_policy_checks(tmp)
         ids = {f.rule_id for f in findings}
-        # We expect at least one of each policy class to show up
+        
         assert "POLICY_001" in ids or "POLICY_002" in ids or "POLICY_003" in ids
-        # Shape sanity
+        
         assert all(f.tool == "policy" for f in findings)
         assert all(f.file.endswith(".tf") for f in findings)

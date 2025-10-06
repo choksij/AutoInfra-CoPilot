@@ -20,14 +20,14 @@ def _extract_pr_payload(evt: Dict[str, Any]) -> Optional[RunRequest]:
 
     pull = evt.get("pull_request") or {}
     repo = evt.get("repository") or {}
-    full_name = repo.get("full_name") or ""  # "owner/repo"
+    full_name = repo.get("full_name") or "" 
 
     pr_number = int(pull.get("number") or 0)
     head = (pull.get("head") or {}).get("sha") or ""
     if not (full_name and pr_number and head):
         return None
 
-    # Always analyze local sample TF for demo; swap for real checkout later.
+    
     return RunRequest(
         repo=full_name,
         pr_number=pr_number,
@@ -57,7 +57,7 @@ async def github_webhook(
 
     status_doc = execute_run(req)
 
-    # Post the final markdown (includes the badge if self-check ran)
+    
     gh = GitHubClient()
     if status_doc.llm_comment_markdown:
         await gh.post_pr_comment(req.repo, req.pr_number, status_doc.llm_comment_markdown)

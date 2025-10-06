@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS runs
     repo             String,
     pr_number        UInt32,
     commit_sha       String,
-    status           LowCardinality(String),    -- running/completed/failed
+    status           LowCardinality(String),    
     duration_ms      UInt32,
     cost_usd_month   Float64,
     created_at       DateTime DEFAULT now()
@@ -22,10 +22,10 @@ SETTINGS index_granularity = 8192;
 CREATE TABLE IF NOT EXISTS findings
 (
     run_id     String,
-    idx        UInt32,                          -- position in list (for stable ordering)
-    tool       LowCardinality(String),          -- "policy" | "checkov" | ...
+    idx        UInt32,                          
+    tool       LowCardinality(String),          
     rule_id    String,
-    severity   LowCardinality(String),          -- LOW/MEDIUM/HIGH/CRITICAL
+    severity   LowCardinality(String),          
     file       String,
     line       UInt32,
     message    String,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS outcomes
     issues_after   UInt32,
     policy_before  UInt32,
     policy_after   UInt32,
-    safe_to_merge  UInt8,                       -- 1 = true, 0 = false
+    safe_to_merge  UInt8,                      
     created_at     DateTime DEFAULT now()
 )
 ENGINE = MergeTree
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS patch_library
 (
     run_id        String,
     patch_md      String,
-    accepted      Nullable(UInt8),              -- NULL = unknown, 1 = accepted, 0 = rejected
+    accepted      Nullable(UInt8),             
     created_at    DateTime DEFAULT now()
 )
 ENGINE = MergeTree

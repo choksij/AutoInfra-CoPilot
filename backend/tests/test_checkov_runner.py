@@ -27,7 +27,7 @@ def test_run_checkov_detects_issue():
 
         findings = run_checkov(tmp)
         assert isinstance(findings, list)
-        assert len(findings) >= 0  # Should run without exceptions
+        assert len(findings) >= 0  
 
         if findings:
             f = findings[0]

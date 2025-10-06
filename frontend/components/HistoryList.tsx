@@ -1,4 +1,4 @@
-// components/HistoryList.tsx
+
 "use client";
 
 import type { HistoryItem } from "../lib/types";

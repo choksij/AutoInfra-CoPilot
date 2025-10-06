@@ -1,4 +1,4 @@
-// app/page.tsx
+
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -17,7 +17,7 @@ export default function Page() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // load initial history
+  
   useEffect(() => {
     (async () => {
       try {
@@ -35,7 +35,7 @@ export default function Page() {
     setLoading(true);
   }, []);
 
-  // poll status when we have a runId
+  
   useEffect(() => {
     if (!runId) return;
 
@@ -45,12 +45,12 @@ export default function Page() {
     async function poll() {
       if (stopped) return;
       try {
-        // runId is guaranteed non-null here due to the guard above
+        
         const s = await getStatus({ run_id: runId! });
         setStatus(s);
         if (s.status === "completed" || s.status === "failed") {
           setLoading(false);
-          // refresh history once
+          
           try {
             const h = await getHistory(10);
             setHistory(h);

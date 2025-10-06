@@ -3,9 +3,9 @@ from pathlib import Path
 
 import pytest
 
-# Composer may not be implemented yet; skip gracefully if missing
+
 try:
-    from backend.services.composer import compose_comment  # type: ignore
+    from backend.services.composer import compose_comment  
     HAS_COMPOSER = True
 except Exception:
     HAS_COMPOSER = False
@@ -17,7 +17,7 @@ def test_compose_comment_with_golden_findings():
     assert golden.exists(), "golden findings file missing"
     findings = json.loads(golden.read_text(encoding="utf-8"))
 
-    # Minimal inputs: findings + cost + repo/pr/commit for context
+    
     md = compose_comment(
         findings=findings,
         cost_estimate=128.0,
@@ -26,5 +26,5 @@ def test_compose_comment_with_golden_findings():
         commit_sha="deadbeef",
     )
     assert isinstance(md, str)
-    # We expect a markdown body; may or may not include a diff depending on your prompt
+    
     assert "AutoInfra" in md or "Policy" in md or "S3" in md

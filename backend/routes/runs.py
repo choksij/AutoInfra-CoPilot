@@ -1,4 +1,4 @@
-# backend/routes/runs.py
+
 from __future__ import annotations
 
 from typing import Dict
@@ -11,19 +11,19 @@ from ..services.metrics import get_metrics
 
 router = APIRouter()
 
-# simple in-memory store for current session
+
 status_store: Dict[str, StatusResponse] = {}
 
 
 @router.post("/run", response_model=StatusResponse)
 def kickoff_run(req: RunRequest) -> StatusResponse:
-    # Run synchronously (MVP)
+    
     status_doc = execute_run(req)
 
-    # Cache in-memory for /status
+    
     status_store[status_doc.run_id] = status_doc
 
-    # Persist to storage (CH or Memory)
+    
     try:
         st = get_storage()
         st.insert_run(
@@ -47,10 +47,10 @@ def kickoff_run(req: RunRequest) -> StatusResponse:
                 safe_to_merge=status_doc.safe_to_merge,
             )
     except Exception:
-        # don't break the run if storage fails
+        
         pass
 
-    # Emit metrics (best-effort)
+    
     try:
         result_tag = (
             "safe" if status_doc.safe_to_merge is True

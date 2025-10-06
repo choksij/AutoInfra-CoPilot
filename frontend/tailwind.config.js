@@ -19,7 +19,7 @@ module.exports = {
         low: "#10b981",
       },
       boxShadow: {
-        // 👇 this makes `shadow-soft` valid
+        // this makes `shadow-soft` valid
         soft: "0 10px 30px -12px rgba(0, 0, 0, 0.25)",
       },
       borderRadius: {

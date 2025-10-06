@@ -7,7 +7,7 @@ _settings = get_settings()
 _client = OpenAI(api_key=_settings.openai_api_key)
 
 def ask_llm(prompt: str) -> str:
-    """Simple one-shot chat."""
+    
     resp = _client.chat.completions.create(
         model=_settings.llm_model,
         messages=[{"role": "user", "content": prompt}],
@@ -16,7 +16,7 @@ def ask_llm(prompt: str) -> str:
     return (resp.choices[0].message.content or "").strip()
 
 def generate_patch_comment(diff: str, summary: dict) -> str:
-    """Send terraform diff + summary to LLM and return markdown suggestions."""
+    
     prompt = f"""
 You are AutoInfra CoPilot. Review this Terraform plan and propose fixes.
 

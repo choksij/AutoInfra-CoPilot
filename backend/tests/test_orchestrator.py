@@ -12,5 +12,5 @@ def test_execute_run_returns_completed_status():
     status = execute_run(req)
     assert status.status in ("completed", "failed")
     assert status.summary.duration_ms >= 0
-    # findings may be empty depending on local tools; just ensure it returns a list
+    
     assert isinstance(status.findings, list)

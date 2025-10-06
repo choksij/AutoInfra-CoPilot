@@ -1,13 +1,13 @@
-/* app/globals.css */
+
 @import "tailwindcss";
 
-/* Theme tokens */
+
 :root {
   --bg: #0b0f14;
   --panel: #0f141b;
   --text: #e6edf3;
   --muted: #9fb0c0;
-  --accent: #22c55e; /* emerald-500 */
+  --accent: #22c55e; 
 }
 
 html, body {
@@ -16,15 +16,15 @@ html, body {
   color: var(--text);
 }
 
-/* Small helpers */
+
 .container-max {
   @apply mx-auto max-w-6xl px-4;
 }
 
-/* Reusable “card” surface (no custom utility used) */
+
 .card {
-  /* pick one of Tailwind’s shadows or an arbitrary value */
-  /* @apply shadow-lg; */
+  
+  
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 
   @apply rounded-2xl ring-1 ring-black/5 bg-[var(--panel)];
@@ -38,7 +38,7 @@ html, body {
   @apply inline-flex items-center rounded border border-white/20 bg-white/5 px-1 text-[10px] leading-4 font-mono;
 }
 
-/* Basic prose tweaks (kept minimal; we also ship styles/prose.css) */
+
 .prose {
   @apply leading-relaxed text-[15px];
 }

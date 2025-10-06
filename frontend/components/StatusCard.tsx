@@ -1,4 +1,4 @@
-// components/StatusCard.tsx
+
 "use client";
 
 import { firstLine, formatMoney, formatDuration } from "../lib/format";

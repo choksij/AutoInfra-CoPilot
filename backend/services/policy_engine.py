@@ -58,7 +58,7 @@ def _scan_file(path: Path) -> List[Finding]:
                 message='S3 bucket has public ACL (acl="public-read" or similar).',
             )
         )
-    # missing block_public_acls or versioning enabled
+    
     if "resource \"aws_s3_bucket\"" in text:
         if not S3_BLOCK_PUBLIC_ACLS_RE.search(text):
             line = text.find("resource \"aws_s3_bucket\"")
@@ -87,7 +87,7 @@ def _scan_file(path: Path) -> List[Finding]:
                 )
             )
 
-    # POLICY_003: RDS must not be publicly accessible
+    
     if RDS_PUBLIC_RE.search(text):
         line = text[: RDS_PUBLIC_RE.search(text).start()].count("\n") + 1
         findings.append(

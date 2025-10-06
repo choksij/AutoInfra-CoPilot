@@ -31,7 +31,7 @@ def run_checkov(base_dir: str) -> List[Finding]:
         
         return []
 
-    if proc.returncode not in (0, 2):  # 0 OK, 2 findings
+    if proc.returncode not in (0, 2):  
         
         return []
 
@@ -48,7 +48,7 @@ def run_checkov(base_dir: str) -> List[Finding]:
         rule_id = item.get("check_id") or item.get("id") or "CKV_UNKNOWN"
         severity = (item.get("severity") or "MEDIUM").upper()
         file_path = item.get("file_path") or item.get("repo_file_path") or item.get("file")
-        # file_line_range often looks like [start, end]
+        
         line = 0
         flr = item.get("file_line_range") or []
         if isinstance(flr, list) and flr:
