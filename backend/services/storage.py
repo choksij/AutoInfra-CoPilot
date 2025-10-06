@@ -191,25 +191,41 @@ class ClickHouseStorage:
     def __init__(self, url: str, user: str = "default", password: str = "") -> None:
         # url examples: http://localhost:8123
         self.url = str(url).rstrip("/")  # ensure AnyUrl → str
-        self.user = str(user)
-        self.password = str(password)
+        self.user = str(user or "")
+        self.password = str(password or "")
         self._client = httpx.Client(timeout=10.0)
 
         # quick health check (non-fatal if fails; caller catches)
-        self._exec("SELECT 1")
+        try:
+            self._exec("SELECT 1")
+        except Exception:
+            pass
+
+    def _auth(self):
+        # Return httpx basic auth tuple or None
+        return (self.user, self.password) if (self.user or self.password) else None
 
     def _exec(self, sql: str) -> str:
-        params = {"database": DB_NAME}
-        auth = None
-        if self.user or self.password:
-            auth = (self.user, self.password)
-        resp = self._client.post(f"{self.url}/", params=params, content=sql.encode("utf-8"))
+        """
+        Execute SQL and return raw text.
+
+        IMPORTANT: always pass SQL via the 'query' URL param (with database)
+        because some ClickHouse deployments return 404 when body-only is used.
+        """
+        params = {"database": DB_NAME, "query": sql}
+        resp = self._client.post(f"{self.url}/", params=params, auth=self._auth())
         resp.raise_for_status()
         return resp.text
 
     def _exec_json(self, sql: str) -> Dict[str, Any]:
-        text = self._exec(sql + " FORMAT JSON")
-        return json.loads(text)
+        """
+        Execute SQL with FORMAT JSON and parse the JSON result.
+        """
+        sql_json = f"{sql} FORMAT JSON"
+        params = {"database": DB_NAME, "query": sql_json}
+        resp = self._client.post(f"{self.url}/", params=params, auth=self._auth())
+        resp.raise_for_status()
+        return resp.json()
 
     def insert_run(
         self,
@@ -290,7 +306,7 @@ class ClickHouseStorage:
         out: List[HistoryItem] = []
         for r in rows:
             created = str(r["created_at"])
-            # ClickHouse may return '2025-10-04 18:20:00' or ISO; normalize
+            # ClickHouse may return 'YYYY-MM-DD HH:MM:SS' or ISO; normalize
             created_iso = created.replace(" ", "T")
             out.append(
                 HistoryItem(
@@ -318,13 +334,19 @@ class ClickHouseStorage:
         created = str(row["created_at"]).replace(" ", "T")
 
         # findings
-        f_obj = self._exec_json(f"SELECT tool, rule_id, severity, file, line, message FROM autoinfra.findings WHERE run_id = {_q(run_id)}")
+        f_obj = self._exec_json(
+            f"SELECT tool, rule_id, severity, file, line, message "
+            f"FROM autoinfra.findings WHERE run_id = {_q(run_id)}"
+        )
         findings = f_obj.get("data", []) if f_obj else []
         checkov_issues = sum(1 for f in findings if (f.get("tool") or "").lower() == "checkov")
         policy_fails = sum(1 for f in findings if (f.get("tool") or "").lower() == "policy")
 
         # outcome (may be missing)
-        o_obj = self._exec_json(f"SELECT issues_before, issues_after, policy_before, policy_after, safe_to_merge FROM autoinfra.outcomes WHERE run_id = {_q(run_id)} LIMIT 1")
+        o_obj = self._exec_json(
+            f"SELECT issues_before, issues_after, policy_before, policy_after, safe_to_merge "
+            f"FROM autoinfra.outcomes WHERE run_id = {_q(run_id)} LIMIT 1"
+        )
         outcome = (o_obj.get("data") or [None])[0]
 
         summary = {
@@ -367,6 +389,7 @@ def _q(s: str) -> str:
 
 _STORAGE_SINGLETON: Optional[Storage] = None
 
+
 def get_storage() -> Storage:
     """
     Choose ClickHouse if configured/available; otherwise MemoryStorage.
@@ -387,7 +410,6 @@ def get_storage() -> Storage:
     # Coerce AnyUrl → str to avoid attribute errors on rstrip etc.
     raw_url = getattr(settings, "clickhouse_url", None)
     ch_url = (str(raw_url) if raw_url else os.getenv("CLICKHOUSE_URL") or "")
-    #ch_url = str(ch_url_val) if ch_url_val else ""
     ch_user = str(getattr(settings, "clickhouse_user", None) or os.getenv("CLICKHOUSE_USER") or "default")
     ch_pass = str(getattr(settings, "clickhouse_password", None) or os.getenv("CLICKHOUSE_PASSWORD") or "")
 
